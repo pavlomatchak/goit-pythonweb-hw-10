@@ -10,7 +10,6 @@ from jose import JWTError, jwt
 from database.db import get_db
 from conf.config import config
 from services.users import UserService
-from conf.config import settings
 
 class Hash:
   pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -63,13 +62,13 @@ def create_email_token(data: dict):
   to_encode = data.copy()
   expire = datetime.now(UTC) + timedelta(days=7)
   to_encode.update({"iat": datetime.now(UTC), "exp": expire})
-  token = jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
+  token = jwt.encode(to_encode, config.JWT_SECRET, algorithm=config.JWT_ALGORITHM)
   return token
 
 async def get_email_from_token(token: str):
   try:
     payload = jwt.decode(
-      token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM]
+      token, config.JWT_SECRET, algorithms=[config.JWT_ALGORITHM]
     )
     email = payload["sub"]
     return email
